@@ -6,27 +6,30 @@ const Button = ({ onClick, text }) => {
 
 const Statistics = ({ good, neutral, bad }) => {
   const all = good + neutral + bad;
-  let average;
-  let positive;
-  if (all === 0) {
-    average = 0;
-    positive = 0;
-  } else {
-    average = (good - bad) / all;
-    positive = (good / all) * 100;
-  }
 
-  return (
-    <>
-      <h1>statistics</h1>
-      <p>good: {good}</p>
-      <p>neutral: {neutral}</p>
-      <p>bad: {bad}</p>
-      <p>all: {all}</p>
-      <p>average: {average}</p>
-      <p>positive: {positive} %</p>
-    </>
-  );
+  if (all === 0) {
+    return (
+      <>
+        <h1>statistics</h1>
+        <p>No feedback given</p>
+      </>
+    );
+  } else {
+    const average = (good - bad) / all;
+    const positive = (good / all) * 100;
+
+    return (
+      <>
+        <h1>statistics</h1>
+        <p>good: {good}</p>
+        <p>neutral: {neutral}</p>
+        <p>bad: {bad}</p>
+        <p>all: {all}</p>
+        <p>average: {average}</p>
+        <p>positive: {positive} %</p>
+      </>
+    );
+  }
 };
 
 const App = () => {
