@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 const Filter = ({ filtered, onChange }) => {
   return (
@@ -31,25 +32,32 @@ const PersonForm = ({
   );
 };
 
-const Persons = ({ persons }) => {
-  return persons.map((person) => (
-    <p key={person.name}>
+const Persons = ({ persons, filtered }) => {
+  const data = persons.filter((person) => {
+    if (person.name.toLowerCase().includes(filtered.toLowerCase())) {
+      return true;
+    }
+    return false;
+  });
+
+  return data.map((person) => (
+    <p key={person.id}>
       {person.name} {person.number}
     </p>
   ));
 };
 
 const App = () => {
-  const personData = [
-    { name: "Arto Hellas", number: "040-123456" },
-    { name: "Ada Lovelace", number: "39-44-5323523" },
-    { name: "Dan Abramov", number: "12-43-234345" },
-    { name: "Mary Poppendieck", number: "39-23-6423122" },
-  ];
-  const [persons, setPersons] = useState(personData);
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [number, setNumber] = useState("");
   const [filtered, setFilter] = useState("");
+
+  useEffect(() => {
+    axios.get("http://localhost:3001/persons/").then((response) => {
+      setPersons(response.data);
+    });
+  }, []);
 
   const newNameHandler = (event) => {
     event.preventDefault();
@@ -61,7 +69,11 @@ const App = () => {
     } else if (isNumberExist) {
       alert(`${number} is already added to phonebook`);
     } else {
-      const newEntry = { name: newName, number: number };
+      const newEntry = {
+        name: newName,
+        number: number,
+        id: persons.length + 1,
+      };
       setPersons(persons.concat(newEntry));
     }
     setNewName("");
@@ -78,10 +90,6 @@ const App = () => {
 
   const filterChangeHandler = (event) => {
     setFilter(event.target.value);
-    const filteredPersons = personData.filter((person) =>
-      person.name.toLowerCase().includes(event.target.value.toLowerCase())
-    );
-    setPersons(filteredPersons);
   };
 
   return (
@@ -97,7 +105,7 @@ const App = () => {
         number={number}
       />
       <h2>Numbers</h2>
-      <Persons persons={persons} />
+      <Persons persons={persons} filtered={filtered} />
     </div>
   );
 };
