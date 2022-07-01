@@ -20,6 +20,7 @@ const CountryDetail = ({ country }) => {
   const languages = Object.entries(country.languages).map((language) => {
     return { name: language[1], id: language[0] };
   });
+
   return (
     <>
       <h1>{country.name.common}</h1>
@@ -38,7 +39,7 @@ const CountryDetail = ({ country }) => {
 
 const WeatherDetail = ({ capital, weather }) => {
   const iconUrl = `https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`;
-  console.log(weather);
+
   return (
     <>
       <h1>Weather in {capital}</h1>
