@@ -1,20 +1,17 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const CountryListing = ({ countries, query }) => {
-  const filteredCountries = countries.filter((country) => {
-    if (country.name.common.toLowerCase().includes(query.toLowerCase())) {
-      return true;
-    }
-    return false;
-  });
-  if (filteredCountries.length === 1) {
-    return <CountryDetail country={filteredCountries[0]} />;
-  } else if (filteredCountries.length > 10 && query) {
+const CountryListing = ({ countries, query, selectCountry }) => {
+  if (countries.length === 1) {
+    return <CountryDetail country={countries[0]} />;
+  } else if (countries.length > 10 && query) {
     return <p>Too many matches, specify another filter</p>;
-  } else if (filteredCountries.length <= 10) {
-    return filteredCountries.map((country) => (
-      <p key={country.ccn3}>{country.name.common}</p>
+  } else if (countries.length <= 10) {
+    return countries.map((country) => (
+      <div key={country.ccn3}>
+        <p>{country.name.common}</p>
+        <button onClick={() => selectCountry(country)}>show</button>
+      </div>
     ));
   } else {
     return <p>search for countries</p>;
@@ -44,6 +41,7 @@ const CountryDetail = ({ country }) => {
 const App = () => {
   const [query, setQuery] = useState("");
   const [countries, setCountries] = useState([]);
+  const [country, setCountry] = useState("");
 
   useEffect(() => {
     axios.get("https://restcountries.com/v3.1/all").then((response) => {
@@ -51,11 +49,34 @@ const App = () => {
     });
   }, []);
 
+  const filteredCountries = countries.filter((country) => {
+    if (country.name.common.toLowerCase().includes(query.toLowerCase())) {
+      return true;
+    }
+    return false;
+  });
+
+  const selectCountry = (newCountry) => {
+    setCountry(newCountry);
+  };
+
+  const queryChange = (event) => {
+    setQuery(event.target.value);
+    setCountry("");
+  };
+
   return (
     <div>
       find countries
-      <input value={query} onChange={(e) => setQuery(e.target.value)} />
-      <CountryListing countries={countries} query={query} />
+      <input value={query} onChange={queryChange} />
+      {!country && (
+        <CountryListing
+          countries={filteredCountries}
+          query={query}
+          selectCountry={selectCountry}
+        />
+      )}
+      {country && <CountryDetail country={country} />}
     </div>
   );
 };
