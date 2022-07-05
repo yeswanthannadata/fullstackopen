@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 
+import Notification from "./components/Notification";
+
 import phoneService from "./services/phonebook";
 
 const Filter = ({ filtered, onChange }) => {
@@ -54,6 +56,7 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [number, setNumber] = useState("");
   const [filtered, setFilter] = useState("");
+  const [successMess, setSuccessMess] = useState(null);
 
   useEffect(() => {
     phoneService.getAll().then((allPhones) => {
@@ -82,6 +85,10 @@ const App = () => {
           );
           setNewName("");
           setNumber("");
+          setSuccessMess(`Updated number for ${updatedPerson.name}`);
+          setTimeout(() => {
+            setSuccessMess(null);
+          }, 5000);
         });
       }
     } else if (isNumberExist) {
@@ -95,6 +102,10 @@ const App = () => {
         setPersons(persons.concat(updatedEntry));
         setNewName("");
         setNumber("");
+        setSuccessMess(`Added ${newEntry.name}`);
+        setTimeout(() => {
+          setSuccessMess(null);
+        }, 5000);
       });
     }
   };
@@ -123,6 +134,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={successMess} />
       <Filter filtered={filtered} onChange={filterChangeHandler} />
       <h2>add a new</h2>
       <PersonForm
