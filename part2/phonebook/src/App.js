@@ -77,19 +77,34 @@ const App = () => {
         )
       ) {
         const newPerson = { ...updatedPerson, number };
-        phoneService.update(newPerson.id, newPerson).then((updatedPerson) => {
-          setPersons(
-            persons.map((person) =>
-              person.id !== updatedPerson.id ? person : updatedPerson
-            )
-          );
-          setNewName("");
-          setNumber("");
-          setSuccessMess(`Updated number for ${updatedPerson.name}`);
-          setTimeout(() => {
-            setSuccessMess(null);
-          }, 5000);
-        });
+        phoneService
+          .update(newPerson.id, newPerson)
+          .then((updatedPerson) => {
+            setPersons(
+              persons.map((person) =>
+                person.id !== updatedPerson.id ? person : updatedPerson
+              )
+            );
+            setNewName("");
+            setNumber("");
+            setSuccessMess({
+              message: `Updated number for ${updatedPerson.name}`,
+              type: "success",
+            });
+            setTimeout(() => {
+              setSuccessMess(null);
+            }, 5000);
+          })
+          .catch((error) => {
+            setSuccessMess({
+              message: `Information of ${newPerson.name} has already been removed from the server`,
+              type: "error",
+            });
+            setTimeout(() => {
+              setSuccessMess(null);
+            }, 5000);
+            setPersons(persons.filter((person) => person.id !== newPerson.id));
+          });
       }
     } else if (isNumberExist) {
       alert(`${number} is already added to phonebook`);
@@ -102,7 +117,7 @@ const App = () => {
         setPersons(persons.concat(updatedEntry));
         setNewName("");
         setNumber("");
-        setSuccessMess(`Added ${newEntry.name}`);
+        setSuccessMess({ message: `Added ${newEntry.name}`, type: "success" });
         setTimeout(() => {
           setSuccessMess(null);
         }, 5000);
