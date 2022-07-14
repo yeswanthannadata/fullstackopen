@@ -97,13 +97,12 @@ const App = () => {
           })
           .catch((error) => {
             setSuccessMess({
-              message: `Information of ${newPerson.name} has already been removed from the server`,
+              message: `${error.response.data.error}`,
               type: "error",
             });
             setTimeout(() => {
               setSuccessMess(null);
             }, 5000);
-            setPersons(persons.filter((person) => person.id !== newPerson.id));
           });
       }
     } else if (isNumberExist) {
@@ -113,15 +112,29 @@ const App = () => {
         name: newName,
         number: number,
       };
-      phoneService.create(newEntry).then((updatedEntry) => {
-        setPersons(persons.concat(updatedEntry));
-        setNewName("");
-        setNumber("");
-        setSuccessMess({ message: `Added ${newEntry.name}`, type: "success" });
-        setTimeout(() => {
-          setSuccessMess(null);
-        }, 5000);
-      });
+      phoneService
+        .create(newEntry)
+        .then((updatedEntry) => {
+          setPersons(persons.concat(updatedEntry));
+          setNewName("");
+          setNumber("");
+          setSuccessMess({
+            message: `Added ${newEntry.name}`,
+            type: "success",
+          });
+          setTimeout(() => {
+            setSuccessMess(null);
+          }, 5000);
+        })
+        .catch((error) => {
+          setSuccessMess({
+            message: `${error.response.data.error}`,
+            type: "error",
+          });
+          setTimeout(() => {
+            setSuccessMess(null);
+          }, 5000);
+        });
     }
   };
 
